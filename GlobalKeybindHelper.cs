@@ -12,12 +12,12 @@ namespace Silksong.HornetlessScreenshots
         public void Update()
         {
             bool toggleAll = Input.GetKeyDown(KeyCode.Alpha0);
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.C))
+            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha1))
             {
                 MeshRenderer hornetMeshRenderer = (MeshRenderer)HeroController.instance.GetComponentInParent(typeof(MeshRenderer));
                 hornetMeshRenderer.enabled ^= true;
             }
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.L))
+            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha2))
             {
                 foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
                 {
@@ -25,14 +25,14 @@ namespace Silksong.HornetlessScreenshots
                 }
                 foreach(GameObject light in Lights)
                 {
-                    light.SetActive(!light.activeSelf);
+                    light?.SetActive(!light.activeSelf);
                 }
             }
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.V))
+            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha3))
             {
                 // status vignette
                 GameObject parent = GameObject.Find("In-game");
-                parent.transform.GetChild(8).gameObject.SetActive(false); 
+                parent.transform.GetChild(8).gameObject?.SetActive(false); 
                 // hero vignette
                 foreach (GameObject vignette in GameObject.FindGameObjectsWithTag("Vignette"))
                 {
@@ -46,7 +46,7 @@ namespace Silksong.HornetlessScreenshots
                 GameObject effects = GameObject.Find("Effects");
                 effects?.SetActive(!effects.activeSelf);
             }
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.H))
+            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha4))
             {
                 HudGlobalHide.IsHidden ^= true;
             }
