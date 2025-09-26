@@ -10,6 +10,12 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static readonly HashSet<GameObject> Lights = [];
     public static readonly HashSet<GameObject> Vignettes = [];
 
+    public static bool AllVisible = true;
+    public static bool HeroModelVisible = true;
+    public static bool HeroLightVisible = true;
+    public static bool VignetteVisible = true;
+    public static bool HUDVisible = true;
+
     private void Awake()
     {
         GameObject.DontDestroyOnLoad(new GameObject("update_object", [typeof(GlobalKeybindHelper)]));
@@ -17,19 +23,36 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
 
     public static void ToggleAllPressed()
     {
-        ToggleHeroModelPressed();
-        ToggleHeroLightPressed();
-        ToggleVignettePressed();
-        ToggleHUDPressed();
+        SetAllVisible(!AllVisible);
+    }
+
+    public static void SetAllVisible(bool visible)
+    {
+        SetHeroModelVisible(visible);
+        SetHeroLightVisible(visible);
+        SetVignetteVisible(visible);
+        SetHUDVisible(visible);
+        AllVisible = visible;
     }
 
     public static void ToggleHeroModelPressed()
     {
+        SetHeroModelVisible(!HeroModelVisible);
+    }
+
+    public static void SetHeroModelVisible(bool visible)
+    {
         MeshRenderer hornetMeshRenderer = (MeshRenderer)HeroController.instance.GetComponentInParent(typeof(MeshRenderer));
-        hornetMeshRenderer.enabled ^= true;
+        hornetMeshRenderer.enabled = visible;
+        HeroModelVisible = visible;
     }
 
     public static void ToggleHeroLightPressed()
+    {
+        SetHeroLightVisible(!HeroLightVisible);
+    }
+
+    public static void SetHeroLightVisible(bool visible)
     {
         foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
         {
@@ -41,11 +64,17 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         }
         foreach (GameObject light in Lights)
         {
-            light?.SetActive(!light.activeSelf);
+            light?.SetActive(visible);
         }
+        HeroLightVisible = visible;
     }
 
     public static void ToggleVignettePressed()
+    {
+        SetVignetteVisible(!VignetteVisible);
+    }
+
+    public static void SetVignetteVisible(bool visible)
     {
         // status vignette
         GameObject parent = GameObject.Find("In-game");
@@ -53,19 +82,30 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         // hero vignette
         foreach (GameObject vignette in GameObject.FindGameObjectsWithTag("Vignette"))
         {
+            if (!Vignettes.Contains(vignette))
+            {
+                vignette.AddComponent<RemoveVignetteOnDestroy>();
+            }
             Vignettes.Add(vignette);
         }
         foreach (GameObject vignette in Vignettes)
         {
-            vignette?.SetActive(!vignette.activeSelf);
+            vignette?.SetActive(visible);
         }
         // hero effects (e.g. particles)
         GameObject effects = GameObject.Find("Effects");
-        effects?.SetActive(!effects.activeSelf);
+        effects?.SetActive(visible);
+        VignetteVisible = visible;
     }
 
     public static void ToggleHUDPressed()
     {
-        HudGlobalHide.IsHidden ^= true;
+        SetHUDVisible(!HUDVisible);
+    }
+
+    public static void SetHUDVisible(bool visible)
+    {
+        HudGlobalHide.IsHidden = !visible;
+        HUDVisible = visible;
     }
 }
