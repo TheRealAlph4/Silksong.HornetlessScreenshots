@@ -37,7 +37,13 @@ namespace HornetlessScreenshots
                 KeyCode button = pair.Value;
                 if(Input.GetKeyDown(button))
                 {
-                    Handlers[bind]?.Invoke();
+                    try
+                    {
+                        Handlers[bind]?.Invoke();
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             }
         }

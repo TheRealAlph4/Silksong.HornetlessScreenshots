@@ -7,8 +7,8 @@ namespace HornetlessScreenshots;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class HornetlessScreenshotsMod : BaseUnityPlugin
 {
-    private static readonly HashSet<GameObject> Lights = [];
-    private static readonly HashSet<GameObject> Vignettes = [];
+    public static readonly HashSet<GameObject> Lights = [];
+    public static readonly HashSet<GameObject> Vignettes = [];
 
     private void Awake()
     {
@@ -33,6 +33,10 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     {
         foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
         {
+            if (!Lights.Contains(light))
+            {
+                light.AddComponent<RemoveLightOnDestroy>();
+            }
             Lights.Add(light);
         }
         foreach (GameObject light in Lights)
