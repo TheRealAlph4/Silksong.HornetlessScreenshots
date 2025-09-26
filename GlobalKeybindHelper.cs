@@ -1,54 +1,44 @@
-﻿using HutongGames.PlayMaker.Actions;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-namespace Silksong.HornetlessScreenshots
+namespace HornetlessScreenshots
 {
     internal class GlobalKeybindHelper : MonoBehaviour
     {
-        private readonly HashSet<GameObject> Lights = [];
-        private readonly HashSet<GameObject> Vignettes = [];
+        public enum Keybind
+        {
+            All,
+            HeroModel,
+            HeroLight,
+            Vignette,
+            HUD,
+        }
+        public readonly Dictionary<Keybind, KeyCode> Keybinds = new() {
+            { Keybind.All, KeyCode.Alpha0 },
+            { Keybind.HeroModel, KeyCode.Alpha1 },
+            { Keybind.HeroLight, KeyCode.Alpha2 },
+            { Keybind.Vignette, KeyCode.Alpha3 },
+            { Keybind.HUD, KeyCode.Alpha4 },
+        };
+        public readonly Dictionary<Keybind, Action> Handlers = new() {
+            { Keybind.All, HornetlessScreenshotsMod.ToggleAllPressed },
+            { Keybind.HeroModel, HornetlessScreenshotsMod.ToggleHeroModelPressed },
+            { Keybind.HeroLight, HornetlessScreenshotsMod.ToggleHeroLightPressed },
+            { Keybind.Vignette, HornetlessScreenshotsMod.ToggleVignettePressed },
+            { Keybind.HUD, HornetlessScreenshotsMod.ToggleHUDPressed },
+        };
+
         public void Update()
         {
-            bool toggleAll = Input.GetKeyDown(KeyCode.Alpha0);
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha1))
+            foreach (KeyValuePair<Keybind, KeyCode> pair in Keybinds)
             {
-                MeshRenderer hornetMeshRenderer = (MeshRenderer)HeroController.instance.GetComponentInParent(typeof(MeshRenderer));
-                hornetMeshRenderer.enabled ^= true;
-            }
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
+                Keybind bind = pair.Key;
+                KeyCode button = pair.Value;
+                if(Input.GetKeyDown(button))
                 {
-                    Lights.Add(light);
+                    Handlers[bind]?.Invoke();
                 }
-                foreach(GameObject light in Lights)
-                {
-                    light?.SetActive(!light.activeSelf);
-                }
-            }
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                // status vignette
-                GameObject parent = GameObject.Find("In-game");
-                parent.transform.GetChild(8).gameObject?.SetActive(false); 
-                // hero vignette
-                foreach (GameObject vignette in GameObject.FindGameObjectsWithTag("Vignette"))
-                {
-                    Vignettes.Add(vignette);
-                }
-                foreach (GameObject vignette in Vignettes)
-                {
-                    vignette?.SetActive(!vignette.activeSelf);
-                }
-                // hero effects (e.g. particles)
-                GameObject effects = GameObject.Find("Effects");
-                effects?.SetActive(!effects.activeSelf);
-            }
-            if (toggleAll || Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                HudGlobalHide.IsHidden ^= true;
             }
         }
     }
