@@ -1,6 +1,7 @@
 using BepInEx;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace HornetlessScreenshots;
 
@@ -16,9 +17,16 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static bool VignetteVisible = true;
     public static bool HUDVisible = true;
 
+    public static bool IsFreecam = false;
+    public static bool IsNoclip = false;
+
+    public static float ForcedHeroX = 0;
+    public static float ForcedHeroY = 0;
+
     private void Awake()
     {
-        GameObject.DontDestroyOnLoad(new GameObject("update_object", [typeof(GlobalKeybindHelper)]));
+        GameObject.DontDestroyOnLoad(new GameObject("HornetlessScreenshots_GlobalKeybindHelper", [typeof(GlobalKeybindHelper)]));
+        GameObject.DontDestroyOnLoad(new GameObject("HornetlessScreenshots_NoclipHelper", [typeof(NoclipHelper)]));
     }
 
     public static void ToggleAllPressed()
@@ -107,5 +115,94 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     {
         HudGlobalHide.IsHidden = !visible;
         HUDVisible = visible;
+    }
+
+    public static void ArrowKeyPressed(float dirX, float dirY)
+    {
+        if (IsNoclip)
+        {
+            MoveHero(dirX, dirY);
+        }
+        if (IsFreecam)
+        {
+            MoveCameraTarget(dirX, dirY);
+        }
+    }
+
+    public static void ToggleFreecamPressed()
+    {
+        SetFreecamEnabled(!IsFreecam);
+    }
+
+    public static void SetFreecamEnabled(bool isFreecam)
+    {
+        GameObject cameraTargetGO = GameObject.FindGameObjectWithTag("CameraTarget");
+        if (cameraTargetGO == null)
+        {
+            return;
+        }
+        CameraTarget target = cameraTargetGO.GetComponent<CameraTarget>();
+        target.enabled = !isFreecam;
+        HeroController.instance.enabled = !isFreecam;
+        SetAllVisible(!isFreecam);
+        if (isFreecam)
+        {
+            SetNoclipEnabled(false);
+        }
+        IsFreecam = isFreecam;
+    }
+
+    public static void MoveCameraTarget(float dirX, float dirY)
+    {
+        if(!IsFreecam)
+        {
+            return;
+        }
+        GameObject cameraTargetGO = GameObject.FindGameObjectWithTag("CameraTarget");
+        if (cameraTargetGO == null)
+        {
+            return;
+        }
+        float mult = GlobalKeybindHelper.IsShiftHeld ? 0.05f : 0.5f;
+        float x = mult * dirX;
+        float y = mult * dirY;
+        cameraTargetGO.transform.SetPositionX(cameraTargetGO.transform.GetPositionX() + x);
+        cameraTargetGO.transform.SetPositionY(cameraTargetGO.transform.GetPositionY() + y);
+    }
+
+    public static void ToggleNoclipPressed()
+    {
+        SetNoclipEnabled(!IsNoclip);
+    }
+
+    public static void SetNoclipEnabled(bool isNoclip)
+    {
+        if (HeroController.instance == null)
+        {
+            return;
+        }
+
+        if (isNoclip)
+        {
+            SetFreecamEnabled(false);
+            ForcedHeroX = HeroController.instance.transform.GetPositionX();
+            ForcedHeroY = HeroController.instance.transform.GetPositionY();
+            SetAllVisible(true);
+        }
+        HeroController.instance.takeNoDamage = isNoclip;
+        IsNoclip = isNoclip;
+    }
+
+    public static void MoveHero(float dirX, float dirY)
+    {
+        if (!IsNoclip)
+        {
+            return;
+        }
+        float mult = GlobalKeybindHelper.IsShiftHeld ? 0.05f : 0.5f;
+        float x = mult * dirX;
+        float y = mult * dirY;
+        ForcedHeroX += x;
+        ForcedHeroY += y;
     }
 }
