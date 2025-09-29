@@ -149,6 +149,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         {
             SetNoclipEnabled(false);
         }
+        HeroController.instance.playerData.isInvincible = isFreecam;
         IsFreecam = isFreecam;
     }
 
@@ -189,7 +190,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
             ForcedHeroY = HeroController.instance.transform.GetPositionY();
             SetAllVisible(true);
         }
-        HeroController.instance.takeNoDamage = isNoclip;
+        HeroController.instance.playerData.isInvincible = isNoclip;
         IsNoclip = isNoclip;
     }
 
