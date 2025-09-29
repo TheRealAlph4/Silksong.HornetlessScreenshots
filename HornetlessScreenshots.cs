@@ -206,4 +206,14 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         ForcedHeroX += x;
         ForcedHeroY += y;
     }
+
+    public static void ResetZoom()
+    {
+        GameCameras.instance.tk2dCam.ZoomFactor = 1;
+    }
+
+    public static void IncreaseZoom(float amount)
+    {
+        GameCameras.instance.tk2dCam.ZoomFactor += amount;
+    }
 }
