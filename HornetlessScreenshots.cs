@@ -16,6 +16,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static bool HeroLightVisible = true;
     public static bool VignetteVisible = true;
     public static bool HUDVisible = true;
+    public static bool EnemiesEnabled = true;
 
     public static bool IsFreecam = false;
     public static bool IsNoclip = false;
@@ -215,5 +216,20 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static void IncreaseZoom(float amount)
     {
         GameCameras.instance.tk2dCam.ZoomFactor += amount;
+    }
+
+    public static void ToggleEnemiesPressed()
+    {
+        SetEnemiesEnabled(!EnemiesEnabled);
+    }
+
+    public static void SetEnemiesEnabled(bool enabled)
+    {
+        HealthManager[] healthManagers = Resources.FindObjectsOfTypeAll<HealthManager>();
+        foreach (HealthManager healthManager in healthManagers)
+        {
+            healthManager.gameObject.SetActive(enabled);
+        }
+        EnemiesEnabled = enabled;
     }
 }
