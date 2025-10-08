@@ -1,7 +1,7 @@
 using BepInEx;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace HornetlessScreenshots;
 
@@ -17,10 +17,12 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static bool VignetteVisible = true;
     public static bool HUDVisible = true;
     public static bool EnemiesEnabled = true;
+    public static bool IsCustomBrightness = false;
 
     public static bool IsFreecam = false;
     public static bool IsNoclip = false;
 
+    public static float PreviousBrightness = 1.0f;
     public static float ForcedHeroX = 0;
     public static float ForcedHeroY = 0;
 
@@ -221,6 +223,52 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static void ToggleEnemiesPressed()
     {
         SetEnemiesEnabled(!EnemiesEnabled);
+    }
+
+    public static void ResetAllBrightnesses()
+    {
+        if (IsCustomBrightness)
+        {
+            GameCameras.instance.brightnessEffect.SetBrightness(PreviousBrightness);
+            IsCustomBrightness = false;
+        }
+        foreach (GameObject light in Lights)
+        {
+            if (light == null) continue;
+            light.transform.localScale = new Vector3(3, 3, 1);
+        }
+    }
+
+    public static void IncreaseGeneralBrightness(float amount)
+    {
+        float brightness = GameCameras.instance.brightnessEffect._Brightness;
+        float shiftHeld = GlobalKeybindHelper.IsShiftHeld ? 0.2f : 1f;
+        float actualChange = shiftHeld * amount;
+        GameCameras.instance.brightnessEffect.SetBrightness(Math.Max(brightness + actualChange, 0));
+        IsCustomBrightness = true;
+    }
+
+    public static void IncreaseHeroLightBrightness(float amount)
+    {
+        float shiftHeld = GlobalKeybindHelper.IsShiftHeld ? 0.2f : 1f;
+        float actualChange = shiftHeld * amount;
+
+        foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
+        {
+            if (!Lights.Contains(light))
+            {
+                light.AddComponent<RemoveLightOnDestroy>();
+            }
+            Lights.Add(light);
+        }
+        foreach (GameObject light in Lights)
+        {
+            if (light == null) continue;
+            Vector3 localScale = light.transform.localScale;
+            localScale.x = Math.Max(localScale.x + actualChange, 0f);
+            localScale.y = Math.Max(localScale.y + actualChange, 0f);
+            light.transform.localScale = localScale;
+        }
     }
 
     public static void SetEnemiesEnabled(bool enabled)
