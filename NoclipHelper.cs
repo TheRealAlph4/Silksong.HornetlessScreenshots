@@ -20,6 +20,7 @@ namespace HornetlessScreenshots
             }
             if (HornetlessScreenshotsMod.IsNoclip)
             {
+                HeroController.instance.playerData.isInvincible = true;
                 HeroController.instance.transform.SetPositionX(HornetlessScreenshotsMod.ForcedHeroX);
                 HeroController.instance.transform.SetPositionY(HornetlessScreenshotsMod.ForcedHeroY);
             }
