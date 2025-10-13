@@ -1,4 +1,4 @@
-A mod to help take higher quality screenshots, mostly for the [wiki](hollowknight.wiki).
+A mod to help take higher quality screenshots, mostly for the [wiki](https://hollowknight.wiki).
 
 # Features and keybinds
 - Number `1`: Toggle Hornet's model
