@@ -1,4 +1,5 @@
 using BepInEx;
+using Mono.Security.Authenticode;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
 {
     public static readonly HashSet<GameObject> Lights = [];
     public static readonly HashSet<GameObject> Vignettes = [];
+    public static readonly HashSet<GameObject> FogBlurWind = [];
 
     public static bool AllVisible = true;
     public static bool HeroModelVisible = true;
@@ -18,6 +20,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static bool HUDVisible = true;
     public static bool EnemiesEnabled = true;
     public static bool IsCustomBrightness = false;
+    public static bool FogBlurWindVisible = true;
 
     public static bool IsFreecam = false;
     public static bool IsNoclip = false;
@@ -279,5 +282,39 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
             healthManager.gameObject.SetActive(enabled);
         }
         EnemiesEnabled = enabled;
+    }
+
+    public static void ToggleFogBlurWindPressed()
+    {
+        SetFogBlurWindEnabled(!FogBlurWindVisible);
+    }
+
+    public static void SetFogBlurWindEnabled(bool enabled)
+    {
+        GameObject blurPlane = GameObject.Find("BlurPlane");
+        GameObject particles = GameObject.Find("SceneParticlesController");
+        GameObject dustStorm = GameObject.Find("Dust Storm Manager");
+        GameObject dustParticles = GameObject.Find("dust_particle_set");
+        GameObject transitionDustParticles = GameObject.Find("blown_sand_tiled_set");
+        FogBlurWind.Add(blurPlane);
+        FogBlurWind.Add(particles);
+        FogBlurWind.Add(dustStorm);
+        FogBlurWind.Add(dustParticles);
+        FogBlurWind.Add(transitionDustParticles);
+        GameObject[] objects = Resources.FindObjectsOfTypeAll<GameObject>();
+        foreach (GameObject obj in objects)
+        {
+            if (obj == null || !obj.activeInHierarchy) continue;
+            string name = obj.name.ToLower();
+            if (name.Contains("fog") || name.Contains("dust") || name.Contains("particles"))
+            {   
+                FogBlurWind.Add(obj);
+            }
+        }
+        foreach (GameObject obj in FogBlurWind)
+        {
+            obj?.SetActive(enabled);
+        }
+        FogBlurWindVisible = enabled;
     }
 }

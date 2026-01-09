@@ -14,6 +14,8 @@ namespace HornetlessScreenshots
             if(isInTransition)
             {
                 HornetlessScreenshotsMod.EnemiesEnabled = true;
+                HornetlessScreenshotsMod.FogBlurWindVisible = true;
+                HornetlessScreenshotsMod.FogBlurWind.Clear();
                 HornetlessScreenshotsMod.ForcedHeroX = HeroController.instance.transform.GetPositionX();
                 HornetlessScreenshotsMod.ForcedHeroY = HeroController.instance.transform.GetPositionY();
                 return;
