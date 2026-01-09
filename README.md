@@ -9,10 +9,12 @@ A mod to help take higher quality screenshots, mostly for the [wiki](https://hol
 - Number `5`, 6, 7: Reset, increase and decrease zoom
 - Number `8`: Noclip (arrow keys to control)
 - Number `9`: Freecam (arrow keys to control)
+- `Insert`: Fixedcam
 - `Backspace`: Toggle enemies
 - Numpad `+`, `-`: Increase and decrease brightness
 - Numpad `*`, `/`: Increase and decrease the size of Hornet's light
 - `=`: Reset brightness and Hornet's light
+- `Delete`: Toggle background blur, fog, dust, particles and Blasted Steps wind
 - `Shift` (while held): Make changes more precise
 
 # Notes
