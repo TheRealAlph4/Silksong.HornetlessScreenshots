@@ -1,5 +1,4 @@
 using BepInEx;
-using Mono.Security.Authenticode;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +22,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static bool FogBlurWindVisible = true;
 
     public static bool IsFreecam = false;
+    public static bool IsFixedcam = false;
     public static bool IsNoclip = false;
 
     public static float PreviousBrightness = 1.0f;
@@ -147,16 +147,45 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         {
             return;
         }
+        if (isFreecam)
+        {
+            if(IsNoclip)
+            {
+                SetNoclipEnabled(false);
+            }
+            if (IsFixedcam)
+            {
+                SetFixedcamEnabled(false);
+            }
+        }
         CameraTarget target = cameraTargetGO.GetComponent<CameraTarget>();
         target.enabled = !isFreecam;
         HeroController.instance.enabled = !isFreecam;
         SetAllVisible(!isFreecam);
-        if (isFreecam)
-        {
-            SetNoclipEnabled(false);
-        }
         HeroController.instance.playerData.isInvincible = isFreecam;
         IsFreecam = isFreecam;
+    }
+    public static void ToggleFixedcamPressed()
+    {
+        SetFixedcamEnabled(!IsFixedcam);
+    }
+
+    public static void SetFixedcamEnabled(bool isFixedcam)
+    {
+        GameObject cameraTargetGO = GameObject.FindGameObjectWithTag("CameraTarget");
+        if (cameraTargetGO == null)
+        {
+            return;
+        }
+        if (isFixedcam)
+        {
+            IsFreecam = false;
+            SetAllVisible(true);
+        }
+        CameraTarget target = cameraTargetGO.GetComponent<CameraTarget>();
+        target.enabled = !isFixedcam;
+        HeroController.instance.enabled = true;
+        IsFixedcam = isFixedcam;
     }
 
     public static void MoveCameraTarget(float dirX, float dirY)
@@ -191,7 +220,10 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
 
         if (isNoclip)
         {
-            SetFreecamEnabled(false);
+            if(IsFreecam)
+            {
+                SetFreecamEnabled(false);
+            }
             ForcedHeroX = HeroController.instance.transform.GetPositionX();
             ForcedHeroY = HeroController.instance.transform.GetPositionY();
             SetAllVisible(true);
