@@ -30,6 +30,9 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     public static float ForcedHeroX = 0;
     public static float ForcedHeroY = 0;
 
+    public static float FreecamPanSpeed = 0.5f;
+    public static float SmoothZoomSpeed = 0.001f;
+
     private void Awake()
     {
         GameObject.DontDestroyOnLoad(new GameObject("HornetlessScreenshots_GlobalKeybindHelper", [typeof(GlobalKeybindHelper)]));
@@ -229,7 +232,7 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         {
             return;
         }
-        float mult = GlobalKeybindHelper.IsShiftHeld ? 0.05f : 0.5f;
+        float mult = GlobalKeybindHelper.IsShiftHeld ? FreecamPanSpeed * 0.1f : FreecamPanSpeed;
         float x = mult * dirX;
         float y = mult * dirY;
         cameraTargetGO.transform.SetPositionX(cameraTargetGO.transform.GetPositionX() + x);
@@ -392,5 +395,23 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
             obj?.SetActive(enabled);
         }
         FogBlurWindVisible = enabled;
+    }
+
+    public static void IncreaseFreecamPanSpeed(float diff)
+    {
+        FreecamPanSpeed += diff;
+        if (FreecamPanSpeed < 0f)
+        {
+            FreecamPanSpeed = 0f;
+        }
+    }
+
+    public static void IncreaseSmoothZoomSpeed(float diff)
+    {
+        SmoothZoomSpeed += diff;
+        if (SmoothZoomSpeed < 0f)
+        {
+            SmoothZoomSpeed = 0f;
+        }
     }
 }
