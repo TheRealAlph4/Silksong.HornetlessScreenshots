@@ -6,9 +6,12 @@ A mod to help take higher quality screenshots, mostly for the [wiki](https://hol
 - Number `3`: Toggle vignettes and status particles
 - Number `4`: Toggle the HUD
 - Number `0`: Toggle and synchronize 1, 2, 3 and 4
-- Number `5`, 6, 7: Reset, increase and decrease zoom
+- Number `5`, `6`, `7`: Reset, increase and decrease zoom
+- `Numpad4` and `Numpad7`: Smooth zoom
+- `Numpad5` and `Numpad8`: Smoothly adjust speed of smooth zoom
 - Number `8`: Noclip (arrow keys to control)
 - Number `9`: Freecam (arrow keys to control)
+- `Numpad6` and `Numpad9`: Smoothly adjust speed of freecam panning
 - `Insert`: Fixedcam
 - `Backspace`: Toggle enemies
 - Numpad `+`, `-`: Increase and decrease brightness
