@@ -1,6 +1,7 @@
 using BepInEx;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HornetlessScreenshots;
@@ -8,9 +9,9 @@ namespace HornetlessScreenshots;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class HornetlessScreenshotsMod : BaseUnityPlugin
 {
-    public static readonly HashSet<GameObject> Lights = [];
-    public static readonly HashSet<GameObject> Vignettes = [];
     public static readonly HashSet<GameObject> FogBlurWind = [];
+    public static readonly Dictionary<GameObject, XYPair> Lights = [];
+    public static readonly Dictionary<GameObject, XYPair> Vignettes = [];
 
     public static bool AllVisible = true;
     public static bool HeroModelVisible = true;
@@ -70,13 +71,14 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
     {
         foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
         {
-            if (!Lights.Contains(light))
+            if (!Lights.Keys.ToList().Contains(light))
             {
                 light.AddComponent<RemoveLightOnDestroy>();
+                Lights[light] = new XYPair(light.transform.GetPositionX(), light.transform.GetPositionY());
             }
-            Lights.Add(light);
         }
-        foreach (GameObject light in Lights)
+        List<GameObject> lights = [.. Lights.Keys];
+        foreach (GameObject light in lights)
         {
             light?.SetActive(visible);
         }
@@ -96,13 +98,14 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         // hero vignette
         foreach (GameObject vignette in GameObject.FindGameObjectsWithTag("Vignette"))
         {
-            if (!Vignettes.Contains(vignette))
+            if (!Vignettes.Keys.ToList().Contains(vignette))
             {
                 vignette.AddComponent<RemoveVignetteOnDestroy>();
+                Vignettes[vignette] = new XYPair(vignette.transform.GetPositionX(), vignette.transform.GetPositionY());
             }
-            Vignettes.Add(vignette);
         }
-        foreach (GameObject vignette in Vignettes)
+        List<GameObject> vignettes = [.. Vignettes.Keys];
+        foreach (GameObject vignette in vignettes)
         {
             vignette?.SetActive(visible);
         }
@@ -149,13 +152,40 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         }
         if (isFreecam)
         {
-            if(IsNoclip)
+            if (IsNoclip)
             {
                 SetNoclipEnabled(false);
             }
             if (IsFixedcam)
             {
                 SetFixedcamEnabled(false);
+            }
+            List<GameObject> vignettes = [.. Vignettes.Keys];
+            foreach (GameObject vignette in vignettes)
+            {
+                Vignettes[vignette].x = vignette.transform.GetPositionX();
+                Vignettes[vignette].y = vignette.transform.GetPositionY();
+            }
+            List<GameObject> lights = [.. Lights.Keys];
+            foreach (GameObject light in lights)
+            {
+                Lights[light].x = light.transform.GetPositionX();
+                Lights[light].y = light.transform.GetPositionY();
+            }
+        }
+        else
+        {
+            List<GameObject> vignettes = [.. Vignettes.Keys];
+            foreach (GameObject vignette in vignettes)
+            {
+                vignette.transform.SetPositionX(Vignettes[vignette].x);
+                vignette.transform.SetPositionY(Vignettes[vignette].y);
+            }
+            List<GameObject> lights = [.. Lights.Keys];
+            foreach (GameObject light in lights)
+            {
+                light.transform.SetPositionX(Lights[light].x);
+                light.transform.SetPositionY(Lights[light].y);
             }
         }
         CameraTarget target = cameraTargetGO.GetComponent<CameraTarget>();
@@ -204,6 +234,18 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
         float y = mult * dirY;
         cameraTargetGO.transform.SetPositionX(cameraTargetGO.transform.GetPositionX() + x);
         cameraTargetGO.transform.SetPositionY(cameraTargetGO.transform.GetPositionY() + y);
+        List<GameObject> vignettes = [.. Vignettes.Keys];
+        foreach (GameObject vignette in vignettes)
+        {
+            vignette.transform.SetPositionX(vignette.transform.GetPositionX() + x);
+            vignette.transform.SetPositionY(vignette.transform.GetPositionY() + y);
+        }
+        List<GameObject> lights = [.. Lights.Keys];
+        foreach (GameObject light in lights)
+        {
+            light.transform.SetPositionX(light.transform.GetPositionX() + x);
+            light.transform.SetPositionY(light.transform.GetPositionY() + y);
+        }
     }
 
     public static void ToggleNoclipPressed()
@@ -267,7 +309,8 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
             GameCameras.instance.brightnessEffect.SetBrightness(PreviousBrightness);
             IsCustomBrightness = false;
         }
-        foreach (GameObject light in Lights)
+        List<GameObject> lights = [.. Lights.Keys];
+        foreach (GameObject light in lights)
         {
             if (light == null) continue;
             light.transform.localScale = new Vector3(3, 3, 1);
@@ -290,13 +333,14 @@ public class HornetlessScreenshotsMod : BaseUnityPlugin
 
         foreach (GameObject light in GameObject.FindGameObjectsWithTag("HeroLightMain"))
         {
-            if (!Lights.Contains(light))
+            if (!Lights.Keys.ToList().Contains(light))
             {
                 light.AddComponent<RemoveLightOnDestroy>();
+                Lights[light] = new XYPair(light.transform.GetPositionX(), light.transform.GetPositionY());
             }
-            Lights.Add(light);
         }
-        foreach (GameObject light in Lights)
+        List<GameObject> lights = [.. Lights.Keys];
+        foreach (GameObject light in lights)
         {
             if (light == null) continue;
             Vector3 localScale = light.transform.localScale;
